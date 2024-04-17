@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
         
-      - name: Restpre keras resources cache
+      - name: Cache keras resources
         id: restore-keras-cache
         uses: actions/cache@v4
         with:
@@ -33,10 +33,3 @@ jobs:
 
       - name: Run tests
         run: pytest
-
-      - name: Save keras resources cache
-        if: steps.restore-keras-cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: ~/.keras
-          key: keras-${{ runner.os }}-${{ hashFiles('tests/conftest.py') }}
