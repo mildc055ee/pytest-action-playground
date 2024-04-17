@@ -2,8 +2,6 @@ name: test
 
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -17,27 +15,28 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
 
-      - name: Set site package path
-        shell: python {0}
-        run: |
-          import os, re, site
-          site_package_path = site.getsitepackages()[0]
-          bin_path = re.sub(r'(.*)/lib/.*', r'\1/bin', site_package_path)
-          with open(os.getenv("GITHUB_ENV"), "a") as env:
-            env.write(
-              f"site_package_path={site_package_path}\n"
-              f"bin_path={bin_path}"
-            )
+      #- name: Set site package path
+      #  shell: python {0}
+      #  run: |
+      #    import os, re, site
+      #    site_package_path = site.getsitepackages()[0]
+      #    bin_path = re.sub(r'(.*)/lib/.*', r'\1/bin', site_package_path)
+      #    with open(os.getenv("GITHUB_ENV"), "a") as env:
+      #      env.write(
+      #        f"site_package_path={site_package_path}\n"
+      #        f"bin_path={bin_path}"
+      #      )
 
-      - name: Cache python packages
-        id: pip-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.site_package_path }}
-            ${{ env.bin_path }}
-          key: ${{ runner.os }}-test-pip-${{ hashFiles('pyproject.toml') }}
+      #- name: Cache python packages
+      #  id: pip-cache
+      #  uses: actions/cache@v4
+      #  with:
+      #    path: |
+      #      ${{ env.site_package_path }}
+      #      ${{ env.bin_path }}
+      #    key: ${{ runner.os }}-test-pip-${{ hashFiles('pyproject.toml') }}
         
       - name: Cache keras resources
         id: restore-keras-cache
@@ -47,7 +46,7 @@ jobs:
           key: keras-${{ runner.os }}-${{ hashFiles('tests/conftest.py') }}
 
       - name: Install dependencies
-        if: steps.pip-cache.outputs.cache-hit != 'true'
+        # if: steps.pip-cache.outputs.cache-hit != 'true'
         run: |
           python -m pip install -U pip
           pip install .
