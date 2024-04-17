@@ -17,7 +17,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'
+
+      - name: Set site package path
+        run: python -c "import site; print(f'site_package_path={site.getsitepackages()[0]}')" >> $GITHUB_ENV
+
+      - name: Cache python packages
+        id: pip-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.site_package_path }}
+          key: ${{ runner.os }}-test-pip-${{ env.site_package_path }}-${{ hashFiles('pyproject.toml') }}
         
       - name: Cache keras resources
         id: restore-keras-cache
@@ -27,6 +36,7 @@ jobs:
           key: keras-${{ runner.os }}-${{ hashFiles('tests/conftest.py') }}
 
       - name: Install dependencies
+        if: steps.pip-cache.outputs.cache-hit != 'true'
         run: |
           python -m pip install -U pip
           pip install .
