@@ -25,3 +25,8 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pytest_action_playground"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
