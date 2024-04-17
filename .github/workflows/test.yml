@@ -32,9 +32,9 @@ jobs:
         id: pip-cache
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ env.site_package_path }}
-            ${{ env.bin_path }}
+          path:
+            - ${{ env.site_package_path }}
+            - ${{ env.bin_path }}
           key: ${{ runner.os }}-test-pip-${{ env.site_package_path }}-${{ hashFiles('pyproject.toml') }}
         
       - name: Cache keras resources
