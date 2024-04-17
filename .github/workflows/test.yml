@@ -19,13 +19,17 @@ jobs:
           python-version: '3.12'
 
       - name: Set site package path
-        run: python -c "import site; print(f'site_package_path={site.getsitepackages()[0]}')" >> $GITHUB_ENV
+        run: |
+          python -c "import site; print(f'site_package_path={site.getsitepackages()[0]}')" >> $GITHUB_ENV
+          python -c "import re,site; print(f'bin_path={re.sub(r'(.*)/bin/.*', r'\1/lib', site.getsitepackages()[0])}))" >> $GITHUB_ENV
 
       - name: Cache python packages
         id: pip-cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.site_package_path }}
+          path: |
+            ${{ env.site_package_path }}
+            ${{ env.bin_path }}
           key: ${{ runner.os }}-test-pip-${{ env.site_package_path }}-${{ hashFiles('pyproject.toml') }}
         
       - name: Cache keras resources
