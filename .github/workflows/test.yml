@@ -23,7 +23,7 @@ jobs:
         run: |
           import os, re, site
           site_package_path = site.getsitepackages()[0]
-          bin_path = re.sub(r'(.*)/bin/.*', r'\1/lib', site_package_path)
+          bin_path = re.sub(r'(.*)/lib/.*', r'\1/bin', site_package_path)
           with open(os.getenv("GITHUB_ENV"), "a") as env:
             env.write(
               f"site_package_path={site_package_path}\n"
@@ -34,16 +34,10 @@ jobs:
         id: pip-cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.site_package_path }}
-          key: ${{ runner.os }}-test-pip-${{ env.site_package_path }}-${{ hashFiles('pyproject.toml') }}
-
-      # TODO: can I merge libs and bin?
-      - name: Cache python binary packages
-        id: pip-bin-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.bin_path }}
-          key: ${{ runner.os }}-test-pip-bin-${{ env.bin_path }}-${{ hashFiles('pyproject.toml') }}
+          path: |
+            ${{ env.site_package_path }}
+            ${{ env.bin_path }}
+          key: ${{ runner.os }}-test-pip-${{ hashFiles('pyproject.toml') }}
         
       - name: Cache keras resources
         id: restore-keras-cache
