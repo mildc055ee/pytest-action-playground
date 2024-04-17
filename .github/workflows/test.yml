@@ -32,10 +32,16 @@ jobs:
         id: pip-cache
         uses: actions/cache@v4
         with:
-          path:
-            - ${{ env.site_package_path }}
-            - ${{ env.bin_path }}
+          path: ${{ env.site_package_path }}
           key: ${{ runner.os }}-test-pip-${{ env.site_package_path }}-${{ hashFiles('pyproject.toml') }}
+
+      # TODO: can I merge libs and bin?
+      - name: Cache python binary packages
+        id: pip-bin-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.bin_path }}
+          key: ${{ runner.os }}-test-pip-bin-${{ env.site_package_path }}-${{ hashFiles('pyproject.toml') }}
         
       - name: Cache keras resources
         id: restore-keras-cache
