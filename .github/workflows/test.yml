@@ -19,9 +19,14 @@ jobs:
           python-version: '3.12'
 
       - name: Set site package path
+        shell: python {0}
         run: |
-          python -c "import site; print(f'site_package_path={site.getsitepackages()[0]}')" >> $GITHUB_ENV
-          python -c "import re,site; print(f'bin_path={re.sub(r'(.*)/bin/.*', r'\1/lib', site.getsitepackages()[0])}))" >> $GITHUB_ENV
+          import os, re, site
+          site_package_path = site.getsitepackages()[0]
+          bin_path = re.sub(r'(.*)/bin/.*', r'\1/lib', site_package_path)
+          with open(os.getenv("GITHUB_ENV"), "a") as env:
+            env.write(f"site_package_path={site_package_path}")
+            env.write(f"bin_path={bin_path}")
 
       - name: Cache python packages
         id: pip-cache
